@@ -1,18 +1,17 @@
-FROM ubuntu
+FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
 
-COPY requirements.txt /app/
-COPY Devops /app/
+# Copy requirements and app code
+COPY requirements.txt ./
+COPY Devops/ ./Devops/
 
-RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
+# Install dependencies globally (no virtualenv needed inside containers)
+RUN pip install --no-cache-dir -r requirements.txt
 
-SHELL ["/bin/bash", "-c"]
-
-RUN python3 -m venv venv1 && \
-source venv1/bin/activate && \
-pip install --no-cache-dir -r requirements.txt
-
+# Expose port
 EXPOSE 8000
 
-CMD source venv1/bin/activate && python3 manage.py runserver 0.0.0.0:8000
+# Default command
+CMD ["python", "Devops/manage.py", "runserver", "0.0.0.0:8000"]
